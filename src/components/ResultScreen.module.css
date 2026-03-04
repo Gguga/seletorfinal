@@ -103,22 +103,80 @@
   display: block;
 }
 
-/* Maintenance additions */
-.additions {
+/* Deficit instruction */
+.actionInstruction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: var(--green-light);
+  border: 1px solid rgba(15, 118, 110, 0.15);
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--gray-700);
   margin-bottom: 24px;
-  border: 1px solid rgba(15, 118, 110, 0.12);
+  line-height: 1.5;
 }
 
-.additionsTitle {
+.actionInstruction svg {
+  flex-shrink: 0;
+  color: var(--green);
+}
+
+.actionInstruction strong {
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* Maintenance block */
+.maintenanceBlock {
+  background: var(--green-light);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(15, 118, 110, 0.15);
+}
+
+.maintenanceInstruction {
+  font-size: 15px;
+  color: var(--gray-900);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.maintenanceInstruction strong {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.maintenanceObs {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.7;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(15, 118, 110, 0.12);
+}
   font-size: 12px;
   font-weight: 700;
   color: var(--green);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+}
+
+.maintenanceDesc {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.additions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .additionItem {
@@ -127,12 +185,7 @@
   gap: 10px;
   font-size: 14px;
   color: var(--gray-700);
-  margin-bottom: 8px;
   font-weight: 500;
-}
-
-.additionItem:last-child {
-  margin-bottom: 0;
 }
 
 .additionDot {
@@ -141,6 +194,39 @@
   background: var(--green);
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.totalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(15, 118, 110, 0.15);
+}
+
+.totalLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.totalValue {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  color: var(--green);
+  letter-spacing: -0.02em;
+}
+
+.resultSub {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gray-500);
+  margin-top: 4px;
 }
 
 .explanation {
