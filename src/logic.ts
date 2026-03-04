@@ -22,8 +22,8 @@ export function calculateRecommendation(data: FormData): Recommendation {
       calories: baseCalories,
       isMaintenance: true,
       maintenanceAdditions: [
-        '+1 porção de carboidrato complexo (~100 kcal)',
-        '+2 porções de fruta (~150 kcal)',
+        '1 porção de carboidrato (~125 kcal)',
+        '2 porções de fruta (~125 kcal)',
       ],
     };
   }
