@@ -6,188 +6,227 @@ interface FormScreenProps {
   onSubmit: (data: FormData) => void;
 }
 
-const initialData: FormData = {
-  sex: '',
-  age: '',
-  height: '',
-  weight: '',
-  trainingFrequency: '',
-  goal: '',
-};
+const TOTAL_STEPS = 6;
 
 export default function FormScreen({ onSubmit }: FormScreenProps) {
-  const [data, setData] = useState<FormData>(initialData);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [step, setStep] = useState(1);
+  const [data, setData] = useState<FormData>({
+    sex: '',
+    age: '',
+    height: '',
+    weight: '',
+    trainingFrequency: '',
+    goal: '',
+  });
+  const [error, setError] = useState('');
+
+  const progress = (step / TOTAL_STEPS) * 100;
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof FormData, string>> = {};
-
-    if (!data.sex) newErrors.sex = 'Selecione o sexo';
-    if (!data.age || isNaN(Number(data.age)) || Number(data.age) < 10 || Number(data.age) > 100) {
-      newErrors.age = 'Informe uma idade válida';
+    setError('');
+    if (step === 1 && !data.sex) { setError('Selecione uma opção para continuar.'); return false; }
+    if (step === 2) {
+      const v = Number(data.age);
+      if (!data.age || v < 10 || v > 100) { setError('Informe uma idade válida.'); return false; }
     }
-    if (!data.height || isNaN(Number(data.height)) || Number(data.height) < 130 || Number(data.height) > 230) {
-      newErrors.height = 'Informe uma altura válida (cm)';
+    if (step === 3) {
+      const v = Number(data.height);
+      if (!data.height || v < 130 || v > 230) { setError('Informe uma altura válida.'); return false; }
     }
-    if (!data.weight || isNaN(Number(data.weight)) || Number(data.weight) < 30 || Number(data.weight) > 300) {
-      newErrors.weight = 'Informe um peso válido (kg)';
+    if (step === 4) {
+      const v = Number(data.weight);
+      if (!data.weight || v < 30 || v > 300) { setError('Informe um peso válido.'); return false; }
     }
-    if (!data.trainingFrequency) newErrors.trainingFrequency = 'Selecione a frequência';
-    if (!data.goal) newErrors.goal = 'Selecione seu objetivo';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (step === 5 && !data.trainingFrequency) { setError('Selecione uma opção para continuar.'); return false; }
+    if (step === 6 && !data.goal) { setError('Selecione uma opção para continuar.'); return false; }
+    return true;
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
+  const next = () => {
+    if (!validate()) return;
+    if (step === TOTAL_STEPS) {
       onSubmit(data);
+    } else {
+      setStep(step + 1);
     }
+  };
+
+  const back = () => {
+    setError('');
+    setStep(step - 1);
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') next();
   };
 
   return (
     <div className={styles.container}>
+
+      <div className={styles.progressBar}>
+        <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+      </div>
+
+      {step > 1 && (
+        <button className={styles.backBtn} onClick={back}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M11 14L6 9L11 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Voltar
+        </button>
+      )}
+
       <div className={styles.inner}>
-        <div className={styles.header + ' animate-fade-up'}>
-          <div className={styles.step}>Etapa 1 de 1</div>
-          <h2 className={styles.title}>Seus dados clínicos</h2>
-          <p className={styles.subtitle}>
-            Preencha com precisão para uma recomendação calibrada ao seu perfil.
-          </p>
+        <div className={styles.stepCount}>
+          {step} <span>/ {TOTAL_STEPS}</span>
         </div>
 
-        <div className={styles.card + ' animate-fade-up-delay-1'}>
-
-          {/* Sexo */}
-          <div className={styles.field}>
-            <label className={styles.label}>Sexo biológico</label>
-            <div className={styles.segmented}>
-              {(['feminino', 'masculino'] as Sex[]).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={`${styles.segment} ${data.sex === s ? styles.segmentActive : ''}`}
-                  onClick={() => setData({ ...data, sex: s })}
-                >
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                </button>
-              ))}
-            </div>
-            {errors.sex && <span className={styles.error}>{errors.sex}</span>}
-          </div>
-
-          {/* Idade / Altura / Peso */}
-          <div className={styles.row}>
-            <div className={styles.field}>
-              <label className={styles.label}>Idade</label>
-              <div className={styles.inputWrapper}>
-                <input
-                  className={`${styles.input} ${errors.age ? styles.inputError : ''}`}
-                  type="number"
-                  placeholder="Ex: 32"
-                  value={data.age}
-                  onChange={(e) => setData({ ...data, age: e.target.value })}
-                />
-                <span className={styles.inputUnit}>anos</span>
-              </div>
-              {errors.age && <span className={styles.error}>{errors.age}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Altura</label>
-              <div className={styles.inputWrapper}>
-                <input
-                  className={`${styles.input} ${errors.height ? styles.inputError : ''}`}
-                  type="number"
-                  placeholder="Ex: 165"
-                  value={data.height}
-                  onChange={(e) => setData({ ...data, height: e.target.value })}
-                />
-                <span className={styles.inputUnit}>cm</span>
-              </div>
-              {errors.height && <span className={styles.error}>{errors.height}</span>}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Peso atual</label>
-              <div className={styles.inputWrapper}>
-                <input
-                  className={`${styles.input} ${errors.weight ? styles.inputError : ''}`}
-                  type="number"
-                  placeholder="Ex: 72"
-                  value={data.weight}
-                  onChange={(e) => setData({ ...data, weight: e.target.value })}
-                />
-                <span className={styles.inputUnit}>kg</span>
-              </div>
-              {errors.weight && <span className={styles.error}>{errors.weight}</span>}
-            </div>
-          </div>
-
-          {/* Frequência de treino */}
-          <div className={styles.field}>
-            <label className={styles.label}>Frequência de treino semanal</label>
-            <div className={styles.segmented}>
+        {step === 1 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Qual é o seu sexo biológico?</h2>
+            <div className={styles.optionGroup}>
               {([
-                { value: '0-1', label: '0 – 1x' },
-                { value: '2-3', label: '2 – 3x' },
-                { value: '4+', label: '4x ou mais' },
-              ] as { value: TrainingFrequency; label: string }[]).map((opt) => (
+                { value: 'feminino', label: 'Feminino' },
+                { value: 'masculino', label: 'Masculino' },
+              ] as { value: Sex; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
-                  type="button"
-                  className={`${styles.segment} ${data.trainingFrequency === opt.value ? styles.segmentActive : ''}`}
-                  onClick={() => setData({ ...data, trainingFrequency: opt.value })}
+                  className={`${styles.optionCard} ${data.sex === opt.value ? styles.optionCardActive : ''}`}
+                  onClick={() => { setData({ ...data, sex: opt.value }); setError(''); }}
                 >
-                  {opt.label}
+                  <span className={styles.optionLabel}>{opt.label}</span>
+                  <span className={styles.optionCheck}>
+                    {data.sex === opt.value && (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8L6.5 11.5L13 4.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </span>
                 </button>
               ))}
             </div>
-            {errors.trainingFrequency && <span className={styles.error}>{errors.trainingFrequency}</span>}
           </div>
+        )}
 
-          {/* Objetivo */}
-          <div className={styles.field}>
-            <label className={styles.label}>Fase atual</label>
-            <div className={styles.goalGroup}>
+        {step === 2 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Qual é a sua idade?</h2>
+            <div className={styles.numericInput}>
+              <input
+                className={styles.bigInput}
+                type="number"
+                placeholder="00"
+                value={data.age}
+                onChange={(e) => { setData({ ...data, age: e.target.value }); setError(''); }}
+                onKeyDown={handleKey}
+                autoFocus
+              />
+              <span className={styles.bigUnit}>anos</span>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Qual é a sua altura?</h2>
+            <div className={styles.numericInput}>
+              <input
+                className={styles.bigInput}
+                type="number"
+                placeholder="000"
+                value={data.height}
+                onChange={(e) => { setData({ ...data, height: e.target.value }); setError(''); }}
+                onKeyDown={handleKey}
+                autoFocus
+              />
+              <span className={styles.bigUnit}>cm</span>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Qual é o seu peso atual?</h2>
+            <div className={styles.numericInput}>
+              <input
+                className={styles.bigInput}
+                type="number"
+                placeholder="00"
+                value={data.weight}
+                onChange={(e) => { setData({ ...data, weight: e.target.value }); setError(''); }}
+                onKeyDown={handleKey}
+                autoFocus
+              />
+              <span className={styles.bigUnit}>kg</span>
+            </div>
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Com que frequência você treina?</h2>
+            <div className={styles.optionGroup}>
               {([
-                {
-                  value: 'emagrecer',
-                  label: 'Ainda quero emagrecer',
-                  desc: 'Estou em processo ativo de redução de peso.',
-                },
-                {
-                  value: 'manter',
-                  label: 'Ja cheguei e quero manter',
-                  desc: 'Atingi meu objetivo e busco consolidar os resultados.',
-                },
+                { value: '0-1', label: '0 a 1x por semana', desc: 'Sedentário ou muito leve' },
+                { value: '2-3', label: '2 a 3x por semana', desc: 'Atividade moderada' },
+                { value: '4+', label: '4x ou mais', desc: 'Atividade intensa' },
+              ] as { value: TrainingFrequency; label: string; desc: string }[]).map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`${styles.optionCard} ${data.trainingFrequency === opt.value ? styles.optionCardActive : ''}`}
+                  onClick={() => { setData({ ...data, trainingFrequency: opt.value }); setError(''); }}
+                >
+                  <span className={styles.optionLabel}>{opt.label}</span>
+                  <span className={styles.optionDesc}>{opt.desc}</span>
+                  <span className={styles.optionCheck}>
+                    {data.trainingFrequency === opt.value && (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8L6.5 11.5L13 4.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 6 && (
+          <div className={styles.slide + ' animate-fade-up'}>
+            <h2 className={styles.question}>Qual é a sua fase atual?</h2>
+            <div className={styles.optionGroup}>
+              {([
+                { value: 'emagrecer', label: 'Ainda quero emagrecer', desc: 'Estou em processo ativo de redução de peso.' },
+                { value: 'manter', label: 'Já cheguei e quero manter', desc: 'Atingi meu objetivo e busco consolidar os resultados.' },
               ] as { value: Goal; label: string; desc: string }[]).map((opt) => (
                 <button
                   key={opt.value}
-                  type="button"
-                  className={`${styles.goalOption} ${data.goal === opt.value ? styles.goalOptionActive : ''}`}
-                  onClick={() => setData({ ...data, goal: opt.value })}
+                  className={`${styles.optionCard} ${data.goal === opt.value ? styles.optionCardActive : ''}`}
+                  onClick={() => { setData({ ...data, goal: opt.value }); setError(''); }}
                 >
-                  <div className={styles.goalRadio}>
-                    <div className={styles.goalRadioInner} />
-                  </div>
-                  <div className={styles.goalText}>
-                    <span className={styles.goalLabel}>{opt.label}</span>
-                    <span className={styles.goalDesc}>{opt.desc}</span>
-                  </div>
+                  <span className={styles.optionLabel}>{opt.label}</span>
+                  <span className={styles.optionDesc}>{opt.desc}</span>
+                  <span className={styles.optionCheck}>
+                    {data.goal === opt.value && (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8L6.5 11.5L13 4.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </span>
                 </button>
               ))}
             </div>
-            {errors.goal && <span className={styles.error}>{errors.goal}</span>}
           </div>
+        )}
 
-          <button className={styles.submit} onClick={handleSubmit}>
-            Gerar recomendação
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
+        {error && <p className={styles.error}>{error}</p>}
+
+        <button className={styles.nextBtn} onClick={next}>
+          {step === TOTAL_STEPS ? 'Ver minha recomendação' : 'Continuar'}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   );
