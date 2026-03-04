@@ -18,8 +18,8 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
         </h1>
 
         <p className={styles.subtitle + ' animate-fade-up-delay-2'}>
-          Identifique a estrutura calórica ideal<br className={styles.br} />
-          para a sua fase atual do tratamento.
+          Descubra qual plano calórico é ideal<br className={styles.br} />
+          para o seu momento atual.
         </p>
 
         <button
