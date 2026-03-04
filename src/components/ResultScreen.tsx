@@ -53,7 +53,7 @@ export default function ResultScreen({ recommendation, onRestart }: ResultScreen
             <div className={styles.maintenanceBlock}>
               <p className={styles.maintenanceTitle}>Fase de consolidação metabólica</p>
               <p className={styles.maintenanceInstruction}>
-                Selecione o plano de <strong>{calories} kcal</strong> e adicione:
+                Selecione o plano de <strong>{calories} kcal</strong> e adicione, usando a tabela de equivalências, nas refeições da sua preferência:
               </p>
               <div className={styles.additions}>
                 {maintenanceAdditions.map((item, i) => (
